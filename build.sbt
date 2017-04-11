@@ -1,11 +1,3 @@
-publishTo in ThisBuild := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
 inThisBuild(Seq(
   organization := "com.novocode",
   version := "0.1-SNAPSHOT",
@@ -14,13 +6,21 @@ inThisBuild(Seq(
   homepage := Some(url("http://github.com/szeiger/leftpad/")),
   scmInfo := Some(ScmInfo(url("https://github.com/szeiger/leftpad"), "scm:git@github.com:szeiger/leftpad.git")),
   developers := List(Developer("szeiger", "Stefan Zeiger", "szeiger@novocode.com", url("http://szeiger.de"))),
-  publishMavenStyle := true,
-  publishArtifact in Test := false
+  publishArtifact in Test := false,
+  bintrayReleaseOnPublish := false
 ))
 
 lazy val root = project.in(file("."))
   .aggregate(core, plugin)
   .enablePlugins(CrossPerProjectPlugin)
+  .disablePlugins(BintrayPlugin)
+  .settings(
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {},
+    PgpKeys.publishSigned := {},
+    PgpKeys.publishLocalSigned := {}
+  )
 
 lazy val core = project.in(file("core")).settings(
   crossScalaVersions := Seq("2.10.6", "2.12.1"),
@@ -32,5 +32,6 @@ lazy val core = project.in(file("core")).settings(
 lazy val plugin = project.in(file("plugin")).settings(
   name := "sbt-leftpad",
   sbtPlugin := true,
-  scalaVersion := "2.10.6"
+  scalaVersion := "2.10.6",
+  bintrayRepository := "sbt-plugins"
 ).dependsOn(core)
