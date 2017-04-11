@@ -3,3 +3,6 @@ jdk:
 - oraclejdk8
 script:
 - admin/build.sh
+before_install:
+- openssl aes-256-cbc -K $encrypted_e9d5073e73be_key -iv $encrypted_e9d5073e73be_iv
+  -in secrets.tar.enc -out secrets.tar -d
